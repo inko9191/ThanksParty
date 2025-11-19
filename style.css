@@ -231,16 +231,46 @@ body.is-hovering .mouse-stalker {
 }
 
 .nav {
+  /* display: flex;  <-- No longer needed on .nav itself if .nav-list handles layout, but good for positioning */
+  display: block;
+}
+
+.nav-list {
   display: flex;
   gap: 2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
   font-size: 0.95rem;
 }
 
-.nav a {
+.nav-link {
   position: relative;
   padding: 0.5rem 1rem;
   color: rgba(255, 255, 255, 0.8);
   transition: color 0.3s;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  color: #fff;
+  text-shadow: 0 0 10px rgba(159, 123, 255, 0.6);
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 0;
+  height: 1px;
+  background: linear-gradient(90deg, #ff7bb9, #9f7bff);
+  transition: width 0.3s ease, left 0.3s ease;
+}
+
+.nav-link:hover::after {
+  width: 80%;
+  left: 10%;
 }
 
 .nav a:hover {
