@@ -110,6 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
         startHeroAnimations();
         // Ensure videos play
         document.querySelectorAll(".bg-video").forEach(v => {
+          v.muted = true; // Force mute for autoplay policy
           const playPromise = v.play();
           if (playPromise !== undefined) {
             playPromise.catch(error => {

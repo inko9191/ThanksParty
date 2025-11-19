@@ -31,7 +31,8 @@ body {
   height: 100%;
   z-index: -2;
   overflow: hidden;
-  background: #000;
+  /* Fallback gradient if video fails */
+  background: radial-gradient(circle at center, #1a1a40 0%, #050420 100%);
 }
 
 .bg-video {
