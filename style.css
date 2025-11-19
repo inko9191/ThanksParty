@@ -777,15 +777,15 @@ body.is-hovering .mouse-stalker {
 
 .meal-track {
   display: flex;
-  gap: 3rem;
+  /* gap: 3rem; Removed to ensure perfect half-width calculation for marquee */
   padding: 60px 0;
-  /* Increased padding to accommodate wave motion */
   width: max-content;
 }
 
 .meal-item {
   flex: 0 0 350px;
-  margin: 0;
+  margin: 0 3rem 0 0;
+  /* Use margin instead of gap for seamless loop */
   border-radius: 24px;
   overflow: hidden;
   position: relative;
@@ -794,8 +794,16 @@ body.is-hovering .mouse-stalker {
   transform-style: preserve-3d;
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: transform 0.3s ease, z-index 0s;
-  /* Instant z-index change */
   z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .meal-item {
+    flex: 0 0 280px;
+    /* Smaller width on mobile */
+    margin-right: 1.5rem;
+    /* Smaller gap on mobile */
+  }
 }
 
 .meal-item::after {
