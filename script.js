@@ -1,4 +1,3 @@
-```javascript
 // GSAP Plugins Registration
 gsap.registerPlugin(ScrollTrigger);
 
