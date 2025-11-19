@@ -20,9 +20,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Continuous magical dust
+    // Reduce frequency on mobile for performance
+    const particleInterval = isMobile ? 500 : 200;
+
     setInterval(() => {
       confetti({
-        particleCount: 2,
+        particleCount: isMobile ? 1 : 2, // Fewer particles on mobile
         startVelocity: 0,
         ticks: 200, // Stay longer
         origin: {
@@ -37,19 +40,44 @@ document.addEventListener("DOMContentLoaded", () => {
         drift: randomInRange(-0.4, 0.4),
         disableForReducedMotion: true
       });
-    }, 200);
+    }, particleInterval);
   }
 
   // ==============================================
-  //  2. Vanilla Tilt Initialization
+  //  2. Vanilla Tilt Initialization (Desktop Only)
   // ==============================================
-  if (typeof VanillaTilt !== "undefined") {
+  const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
+  if (typeof VanillaTilt !== "undefined" && !isMobile) {
     VanillaTilt.init(document.querySelectorAll("[data-tilt]"), {
       max: 10,
       speed: 400,
       glare: true,
       "max-glare": 0.2,
       scale: 1.05
+    });
+  }
+
+  // ==============================================
+  //  2.5. Mobile Navigation
+  // ==============================================
+  const mobileMenuBtn = document.querySelector(".mobile-menu-btn");
+  const mobileNavOverlay = document.querySelector(".mobile-nav-overlay");
+  const mobileNavLinks = document.querySelectorAll(".mobile-nav-link");
+
+  if (mobileMenuBtn && mobileNavOverlay) {
+    mobileMenuBtn.addEventListener("click", () => {
+      mobileMenuBtn.classList.toggle("active");
+      mobileNavOverlay.classList.toggle("active");
+      document.body.style.overflow = mobileNavOverlay.classList.contains("active") ? "hidden" : "";
+    });
+
+    mobileNavLinks.forEach(link => {
+      link.addEventListener("click", () => {
+        mobileMenuBtn.classList.remove("active");
+        mobileNavOverlay.classList.remove("active");
+        document.body.style.overflow = "";
+      });
     });
   }
 
