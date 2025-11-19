@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ==============================================
 
   if (typeof VanillaTilt !== "undefined" && !isMobile) {
-    VanillaTilt.init(document.querySelectorAll("[data-tilt]"), {
+    VanillaTilt.init(document.querySelectorAll(".js-tilt"), {
       max: 10,
       speed: 400,
       glare: true,

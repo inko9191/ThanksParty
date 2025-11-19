@@ -285,6 +285,21 @@ body.is-hovering .mouse-stalker {
   display: none;
 }
 
+@media (max-width: 768px) {
+  .nav {
+    display: none;
+  }
+
+  .mobile-menu-btn {
+    display: block;
+  }
+
+  .mobile-nav-overlay {
+    display: flex;
+    /* Prepared for toggle */
+  }
+}
+
 /* Hero Section */
 .hero {
   position: relative;
