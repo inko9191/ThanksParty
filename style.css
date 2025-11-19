@@ -13,7 +13,7 @@ body {
   /* Prevent horizontal scroll */
   font-family: "Zen Kaku Gothic New", sans-serif;
   color: #fff;
-  background-color: #050420;
+  /* background-color: #050420;  <-- Removed to allow fixed video to show */
   line-height: 1.8;
   cursor: none;
   /* Custom cursor */
