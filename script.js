@@ -287,9 +287,9 @@ document.addEventListener("DOMContentLoaded", () => {
   if (mealTrack) {
     // 1. Horizontal Scroll (Marquee)
     const marqueeTween = gsap.to(".meal-track", {
-      xPercent: -50,
+      xPercent: -25, // Move 1/4 of the track (1 set out of 4)
       ease: "none",
-      duration: 40, // Slightly faster for better flow
+      duration: 20, // Adjusted duration for shorter distance (was 40 for 50%)
       repeat: -1,
     });
 
