@@ -109,9 +109,25 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelector(".loading-screen").style.display = "none";
         startHeroAnimations();
         // Ensure videos play
-        document.querySelectorAll(".bg-video").forEach(v => v.play().catch(() => { }));
+        document.querySelectorAll(".bg-video").forEach(v => {
+          const playPromise = v.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(error => {
+              console.error("Video play failed:", error);
+            });
+          }
+        });
       },
     });
+
+  // Safety timeout: Hide loading screen after 4 seconds if it hasn't disappeared
+  setTimeout(() => {
+    const loadingScreen = document.querySelector(".loading-screen");
+    if (loadingScreen && loadingScreen.style.display !== "none") {
+      loadingScreen.style.display = "none";
+      startHeroAnimations();
+    }
+  }, 4000);
 
   // --- Hero Section Animations ---
   function startHeroAnimations() {
