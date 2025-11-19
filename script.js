@@ -1,7 +1,9 @@
+```javascript
 // GSAP Plugins Registration
 gsap.registerPlugin(ScrollTrigger);
 
 document.addEventListener("DOMContentLoaded", () => {
+  const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
   // ==============================================
   //  1. Magical Particles (tsparticles)
@@ -46,7 +48,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // ==============================================
   //  2. Vanilla Tilt Initialization (Desktop Only)
   // ==============================================
-  const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
   if (typeof VanillaTilt !== "undefined" && !isMobile) {
     VanillaTilt.init(document.querySelectorAll("[data-tilt]"), {
