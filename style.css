@@ -518,7 +518,7 @@ body.is-hovering .mouse-stalker {
 
 .scroll-indicator {
   position: absolute;
-  bottom: 3rem;
+  bottom: 0;
   left: 50%;
   transform: translateX(-50%);
   z-index: 3;
