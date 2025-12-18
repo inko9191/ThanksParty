@@ -119,6 +119,17 @@ img {
 .loading-content {
   text-align: center;
   overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+/* Fireworks Canvas for Loading Screen */
+#fireworks-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
 }
 
 .loading-logo {
@@ -423,6 +434,86 @@ body.is-hovering .mouse-stalker {
   font-size: 0.8rem;
   border: 1px solid rgba(255, 255, 255, 0.15);
   color: #d4c4ff;
+}
+
+/* Countdown Timer */
+.countdown-container {
+  margin: 2.5rem auto 0;
+  text-align: center;
+  opacity: 0;
+}
+
+.countdown-label {
+  font-family: "Noto Serif JP", serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.3em;
+  color: #b8a0ff;
+  margin: 0 0 1rem;
+  text-shadow: 0 0 10px rgba(159, 123, 255, 0.4);
+}
+
+.countdown-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.2rem 2rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.countdown-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 60px;
+}
+
+.countdown-value {
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 600;
+  background: linear-gradient(180deg, #fff 0%, #c4b5fd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  min-width: 2ch;
+  text-align: center;
+  transition: transform 0.15s ease;
+}
+
+.countdown-value.flip {
+  transform: scale(1.2);
+}
+
+.countdown-name {
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 0.3rem;
+  text-transform: uppercase;
+}
+
+.countdown-separator {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.8rem;
+  color: #9f7bff;
+  animation: countdown-pulse 1s ease-in-out infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes countdown-pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
 }
 
 .scroll-indicator {
@@ -1111,6 +1202,33 @@ body.is-hovering .mouse-stalker {
     font-size: 3rem;
   }
 
+  /* Countdown Timer Mobile */
+  .countdown-container {
+    margin-top: 1.5rem;
+  }
+
+  .countdown-timer {
+    gap: 0.25rem;
+    padding: 0.8rem 1rem;
+  }
+
+  .countdown-unit {
+    min-width: 45px;
+  }
+
+  .countdown-value {
+    font-size: 1.5rem;
+  }
+
+  .countdown-separator {
+    font-size: 1.2rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .countdown-name {
+    font-size: 0.55rem;
+  }
+
   .section {
     padding: 5rem 1.5rem;
   }
@@ -1149,5 +1267,157 @@ body.is-hovering .mouse-stalker {
 
   .access-info {
     padding: 1.5rem;
+  }
+}
+
+/* ================================
+   3D Model Viewer Section
+   ================================ */
+.section-3d-map {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, rgba(5, 4, 32, 0.9) 0%, rgba(20, 15, 50, 0.95) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.section-3d-map::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 30%, rgba(159, 123, 255, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(255, 123, 185, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.model-viewer-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.model-viewer {
+  width: 100%;
+  height: 500px;
+  border-radius: 30px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 30px 60px rgba(0, 0, 0, 0.4),
+    0 0 40px rgba(159, 123, 255, 0.1) inset;
+  position: relative;
+  cursor: grab;
+}
+
+.model-viewer:active {
+  cursor: grabbing;
+}
+
+.model-viewer canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Loading State */
+.model-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(5, 4, 32, 0.9);
+  z-index: 10;
+  transition: opacity 0.5s ease;
+}
+
+.model-loading.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.model-loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #9f7bff;
+  border-radius: 50%;
+  animation: model-spin 1s linear infinite;
+}
+
+@keyframes model-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.model-loading p {
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.1em;
+}
+
+/* Control Buttons */
+.model-controls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.model-control-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.model-control-btn:hover {
+  background: rgba(159, 123, 255, 0.2);
+  border-color: rgba(159, 123, 255, 0.4);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(159, 123, 255, 0.2);
+}
+
+.model-control-btn.active {
+  background: rgba(159, 123, 255, 0.3);
+  border-color: #9f7bff;
+  color: #fff;
+}
+
+.model-control-btn span {
+  font-size: 1.1rem;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .model-viewer {
+    height: 350px;
+    border-radius: 20px;
+  }
+
+  .model-controls {
+    flex-wrap: wrap;
+  }
+
+  .model-control-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
   }
 }

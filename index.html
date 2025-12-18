@@ -18,19 +18,24 @@
   <script src="https://cdn.jsdelivr.net/npm/tsparticles-confetti@2.12.0/tsparticles.confetti.bundle.min.js"></script>
   <!-- Vanilla Tilt for 3D effects -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+  <!-- Three.js for 3D Model Viewer -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 
 <body>
   <!-- Fixed Background Videos -->
   <div id="fixed-background" aria-hidden="true">
     <video id="bg-video-hero" class="bg-video" autoplay muted loop playsinline preload="auto">
-      <source src="hero-rabbit.mp4" type="video/mp4" />
+      <source src="public/hero-rabbit.mp4" type="video/mp4" />
     </video>
     <video id="bg-video-welcome" class="bg-video" muted loop playsinline preload="none">
-      <source src="welcome-cards.mp4" type="video/mp4" />
+      <source src="public/welcome-cards.mp4" type="video/mp4" />
     </video>
     <video id="bg-video-about" class="bg-video" muted loop playsinline preload="none">
-      <source src="about-cheshire.mp4" type="video/mp4" />
+      <source src="public/about-cheshire.mp4" type="video/mp4" />
     </video>
     <div class="bg-overlay"></div>
   </div>
@@ -40,6 +45,7 @@
 
   <!-- Loading Screen -->
   <div class="loading-screen">
+    <canvas id="fireworks-canvas"></canvas>
     <div class="loading-content">
       <div class="loading-logo">Alice’s Thank You Party</div>
       <div class="loading-bar">
@@ -100,6 +106,31 @@
         <div class="hero-meta">
           <p><span>日程</span>2026年3月1日（日） 14:00 入場開始</p>
           <p><span>場所</span>東京プリンスホテル（東京都港区芝公園3-3-1）</p>
+        </div>
+        <!-- Countdown Timer -->
+        <div class="countdown-container">
+          <p class="countdown-label">謝恩会まであと</p>
+          <div class="countdown-timer" id="countdown-timer">
+            <div class="countdown-unit">
+              <span class="countdown-value" id="countdown-days">00</span>
+              <span class="countdown-name">DAYS</span>
+            </div>
+            <div class="countdown-separator">:</div>
+            <div class="countdown-unit">
+              <span class="countdown-value" id="countdown-hours">00</span>
+              <span class="countdown-name">HOURS</span>
+            </div>
+            <div class="countdown-separator">:</div>
+            <div class="countdown-unit">
+              <span class="countdown-value" id="countdown-minutes">00</span>
+              <span class="countdown-name">MINS</span>
+            </div>
+            <div class="countdown-separator">:</div>
+            <div class="countdown-unit">
+              <span class="countdown-value" id="countdown-seconds">00</span>
+              <span class="countdown-name">SECS</span>
+            </div>
+          </div>
         </div>
       </div>
       <div class="scroll-indicator" aria-hidden="true">
@@ -165,6 +196,33 @@
       </div>
     </section>
 
+    <!-- 3D School Map Section -->
+    <section id="school-map" class="section section-3d-map">
+      <div class="section-inner">
+        <h2 class="section-title">思い出の場所</h2>
+        <p class="section-lead">
+          私たちが過ごした母校周辺の風景。<br>
+          マウスやタッチでドラッグして、360°自由に眺めてみてください。
+        </p>
+        <div class="model-viewer-container">
+          <div id="model-viewer" class="model-viewer">
+            <div class="model-loading" id="model-loading">
+              <div class="model-loading-spinner"></div>
+              <p>3Dモデルを読み込み中...</p>
+            </div>
+          </div>
+          <div class="model-controls">
+            <button class="model-control-btn" id="model-reset" title="視点をリセット">
+              <span>⟳</span> リセット
+            </button>
+            <button class="model-control-btn" id="model-autorotate" title="自動回転">
+              <span>◎</span> 自動回転
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Special Events -->
     <section id="events" class="section section-events">
       <div class="section-inner">
@@ -178,7 +236,7 @@
           <!-- Event 1 -->
           <div class="event-card js-tilt">
             <div class="event-image">
-              <img src="./student_council_election.png" alt="もしも俺が生徒会長だったら" />
+              <img src="public/student_council_election.png" alt="もしも俺が生徒会長だったら" />
             </div>
             <div class="event-content">
               <h3>もしも俺が生徒会長だったら</h3>
@@ -194,7 +252,7 @@
           <!-- Event 2 -->
           <div class="event-card reverse js-tilt">
             <div class="event-image">
-              <img src="./arbitrary_awards.png" alt="勝手に表彰してみた" />
+              <img src="public/arbitrary_awards.png" alt="勝手に表彰してみた" />
             </div>
             <div class="event-content">
               <h3>勝手に表彰してみた</h3>
@@ -209,7 +267,7 @@
           <!-- Event 3 -->
           <div class="event-card js-tilt">
             <div class="event-image">
-              <img src="./teacher_performance.png" alt="先生による有志発表" />
+              <img src="public/teacher_performance.png" alt="先生による有志発表" />
             </div>
             <div class="event-content">
               <h3>先生による有志発表</h3>
@@ -290,58 +348,58 @@
           <div class="meal-track">
             <!-- Set 1 -->
             <figure class="meal-item js-tilt">
-              <img src="./meal-1.jpeg" alt="食事イメージ1" />
+              <img src="public/meal-1.jpeg" alt="食事イメージ1" />
             </figure>
             <figure class="meal-item js-tilt">
-              <img src="./meal-2.jpeg" alt="食事イメージ2" />
+              <img src="public/meal-2.jpeg" alt="食事イメージ2" />
             </figure>
             <figure class="meal-item js-tilt">
-              <img src="./meal-3.jpeg" alt="食事イメージ4" />
+              <img src="public/meal-3.jpeg" alt="食事イメージ4" />
             </figure>
             <figure class="meal-item js-tilt">
-              <img src="./meal-4.jpeg" alt="食事イメージ5" />
+              <img src="public/meal-4.jpeg" alt="食事イメージ5" />
             </figure>
 
             <!-- Set 2 -->
             <figure class="meal-item js-tilt">
-              <img src="./meal-1.jpeg" alt="食事イメージ1" />
+              <img src="public/meal-1.jpeg" alt="食事イメージ1" />
             </figure>
             <figure class="meal-item js-tilt">
-              <img src="./meal-2.jpeg" alt="食事イメージ2" />
+              <img src="public/meal-2.jpeg" alt="食事イメージ2" />
             </figure>
             <figure class="meal-item js-tilt">
-              <img src="./meal-3.jpeg" alt="食事イメージ4" />
+              <img src="public/meal-3.jpeg" alt="食事イメージ4" />
             </figure>
             <figure class="meal-item js-tilt">
-              <img src="./meal-4.jpeg" alt="食事イメージ5" />
+              <img src="public/meal-4.jpeg" alt="食事イメージ5" />
             </figure>
 
             <!-- Set 3 -->
             <figure class="meal-item js-tilt">
-              <img src="./meal-1.jpeg" alt="食事イメージ1" />
+              <img src="public/meal-1.jpeg" alt="食事イメージ1" />
             </figure>
             <figure class="meal-item js-tilt">
-              <img src="./meal-2.jpeg" alt="食事イメージ2" />
+              <img src="public/meal-2.jpeg" alt="食事イメージ2" />
             </figure>
             <figure class="meal-item js-tilt">
-              <img src="./meal-3.jpeg" alt="食事イメージ4" />
+              <img src="public/meal-3.jpeg" alt="食事イメージ4" />
             </figure>
             <figure class="meal-item js-tilt">
-              <img src="./meal-4.jpeg" alt="食事イメージ5" />
+              <img src="public/meal-4.jpeg" alt="食事イメージ5" />
             </figure>
 
             <!-- Set 4 -->
             <figure class="meal-item js-tilt">
-              <img src="./meal-1.jpeg" alt="食事イメージ1" />
+              <img src="public/meal-1.jpeg" alt="食事イメージ1" />
             </figure>
             <figure class="meal-item js-tilt">
-              <img src="./meal-2.jpeg" alt="食事イメージ2" />
+              <img src="public/meal-2.jpeg" alt="食事イメージ2" />
             </figure>
             <figure class="meal-item js-tilt">
-              <img src="./meal-3.jpeg" alt="食事イメージ4" />
+              <img src="public/meal-3.jpeg" alt="食事イメージ4" />
             </figure>
             <figure class="meal-item js-tilt">
-              <img src="./meal-4.jpeg" alt="食事イメージ5" />
+              <img src="public/meal-4.jpeg" alt="食事イメージ5" />
             </figure>
           </div>
         </div>
@@ -369,7 +427,7 @@
           </div>
           <div class="access-map-placeholder js-tilt">
             <!-- Replace with actual map image or iframe -->
-            <img src="./access-map.jpeg" alt="会場アクセスマップ" class="access-map-image" />
+            <img src="public/access-map.jpeg" alt="会場アクセスマップ" class="access-map-image" />
           </div>
         </div>
       </div>
