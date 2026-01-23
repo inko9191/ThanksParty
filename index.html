@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>不思議の国の謝恩会 | Alice's Thank You Party</title>
+  <meta name="description" content="不思議の国のアリスの世界観で贈る、一夜限りの謝恩会パーティー。先生や仲間への“ありがとう”があふれる、魔法のようなひとときを。" />
+  <link rel="stylesheet" href="./style.css?v=20241218162806" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Noto+Serif+JP:wght@400;600&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <!-- Particles.js for magical dust -->
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles-confetti@2.12.0/tsparticles.confetti.bundle.min.js"></script>
+  <!-- Vanilla Tilt for 3D effects -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+  <!-- Three.js for 3D Model Viewer -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+
+<body>
+  <!-- Fixed Background Videos -->
+  <div id="fixed-background" aria-hidden="true">
+    <video id="bg-video-hero" class="bg-video" autoplay muted loop playsinline preload="auto">
+      <source src="public/hero-rabbit.mp4" type="video/mp4" />
+    </video>
+    <video id="bg-video-welcome" class="bg-video" muted loop playsinline preload="none">
+      <source src="public/welcome-cards.mp4" type="video/mp4" />
+    </video>
+    <video id="bg-video-about" class="bg-video" muted loop playsinline preload="none">
+      <source src="public/about-cheshire.mp4" type="video/mp4" />
+    </video>
+    <div class="bg-overlay"></div>
+  </div>
+
+  <!-- Magical Particles Container -->
+  <div id="particles-container"></div>
+
+  <!-- Loading Screen -->
+  <div class="loading-screen">
+    <canvas id="fireworks-canvas"></canvas>
+    <div class="loading-content">
+      <div class="loading-logo">Alice’s Thank You Party</div>
+      <div class="loading-bar">
+        <div class="loading-bar-progress"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mouse Stalker -->
+  <div class="mouse-stalker"></div>
+  <div class="mouse-stalker-dot"></div>
+
+  <header class="site-header">
+    <div class="logo">Alice’s Thank You Party</div>
+    <nav class="nav">
+      <ul class="nav-list">
+        <li><a href="#welcome" class="nav-link js-tilt">Welcome</a></li>
+        <li><a href="#about" class="nav-link js-tilt">About</a></li>
+        <li><a href="#program" class="nav-link js-tilt">Program</a></li>
+        <li><a href="#meal" class="nav-link js-tilt">Meal</a></li>
+        <li><a href="#access" class="nav-link js-tilt">Access</a></li>
+      </ul>
+    </nav>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" aria-label="メニューを開く">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+
+    <!-- Mobile Navigation Overlay -->
+    <div class="mobile-nav-overlay">
+      <nav class="mobile-nav">
+        <ul class="mobile-nav-list">
+          <li><a href="#welcome" class="mobile-nav-link">Welcome</a></li>
+          <li><a href="#about" class="mobile-nav-link">About</a></li>
+          <li><a href="#program" class="mobile-nav-link">Program</a></li>
+          <li><a href="#meal" class="mobile-nav-link">Meal</a></li>
+          <li><a href="#access" class="mobile-nav-link">Access</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-inner js-tilt">
+        <p class="hero-eyebrow">一夜限りの、不思議の国へご招待。</p>
+        <h1 id="hero-title" class="hero-title">
+          不思議の国の謝恩会
+        </h1>
+        <p class="hero-subtitle">
+          時計が逆さに進み、ティーカップが踊りだす。<br />
+          先生と仲間への“ありがとう”を、アリスの世界で。
+        </p>
+        <div class="hero-meta">
+          <p><span>日程</span>2026年3月1日（日） 14:00 入場開始</p>
+          <p><span>場所</span>東京プリンスホテル（東京都港区芝公園3-3-1）</p>
+        </div>
+        <!-- Countdown Timer -->
+        <div class="countdown-container">
+          <p class="countdown-label">謝恩会まであと</p>
+          <div class="countdown-timer" id="countdown-timer">
+            <div class="countdown-unit">
+              <span class="countdown-value" id="countdown-days">00</span>
+              <span class="countdown-name">DAYS</span>
+            </div>
+            <div class="countdown-separator">:</div>
+            <div class="countdown-unit">
+              <span class="countdown-value" id="countdown-hours">00</span>
+              <span class="countdown-name">HOURS</span>
+            </div>
+            <div class="countdown-separator">:</div>
+            <div class="countdown-unit">
+              <span class="countdown-value" id="countdown-minutes">00</span>
+              <span class="countdown-name">MINS</span>
+            </div>
+            <div class="countdown-separator">:</div>
+            <div class="countdown-unit">
+              <span class="countdown-value" id="countdown-seconds">00</span>
+              <span class="countdown-name">SECS</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="scroll-indicator" aria-hidden="true">
+        <span>Scroll Down</span>
+        <div class="scroll-arrow"></div>
+      </div>
+      <div class="hero-decor hero-decor-clock" aria-hidden="true"></div>
+      <div class="hero-decor hero-decor-cards" aria-hidden="true"></div>
+    </section>
+
+    <!-- Welcome Section -->
+    <section class="section section-welcome fade-in-section">
+      <div class="welcome-content js-tilt">
+        <p class="welcome-eyebrow">Welcome to Wonderland</p>
+        <h2 class="welcome-title">夢と魔法の謝恩会へ、<br />ようこそ。</h2>
+        <p class="welcome-text">
+          この日、皆さまをお迎えするのは、<br />
+          不思議の国のアリスの世界。<br />
+          先生や仲間との思い出を胸に、<br />
+          魔法のような時間を過ごしましょう。
+        </p>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="section section-about fade-in-section">
+      <div class="section-inner about-content">
+        <h2 class="section-title">謝恩会について</h2>
+        <p class="section-lead">
+          不思議の国から感謝の会をお届けします。<br>
+          そこは、常識が通用しない夢と魔法の世界。<br>
+          時計うさぎが時間を止め、帽子屋が狂ったお茶会を開く場所。<br>
+          <br>
+          この謝恩会では、そんなアリスの物語のような<br>
+          「少し不思議で心ときめく世界」を再現しました。<br>
+          <br>
+          先生や仲間への「ありがとう」を、<br>
+          絵本の1ページのような空間で、ゆっくりと伝え合いましょう。
+        </p>
+        <div class="about-grid">
+          <div class="about-card js-tilt">
+            <h3>テーマ</h3>
+            <p>
+              「Thank You for Wonderland」―<br />
+              先生と仲間への感謝を、絵本の1ページのような世界で。
+            </p>
+          </div>
+          <div class="about-card js-tilt">
+            <h3>ドレスコード</h3>
+            <p>
+              生徒は制服、保護者の皆さまは<br />
+              卒業式のままの服装でお越しください。
+            </p>
+          </div>
+          <div class="about-card js-tilt">
+            <h3>コンテンツ</h3>
+            <p>
+              フォトスポット、メッセージカードティータイム、<br />
+              スペシャルムービー、先生へのサプライズ…。
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3D School Map Section -->
+    <section id="school-map" class="section section-3d-map">
+      <div class="section-inner">
+        <h2 class="section-title">思い出の場所</h2>
+        <p class="section-lead">
+          私たちが過ごした母校周辺の風景。<br>
+          マウスやタッチでドラッグして、360°自由に眺めてみてください。
+        </p>
+        <div class="model-viewer-container">
+          <div id="model-viewer" class="model-viewer">
+            <div class="model-loading" id="model-loading">
+              <div class="model-loading-spinner"></div>
+              <p>3Dモデルを読み込み中...</p>
+            </div>
+          </div>
+          <div class="model-controls">
+            <button class="model-control-btn" id="model-reset" title="視点をリセット">
+              <span>⟳</span> リセット
+            </button>
+            <button class="model-control-btn" id="model-autorotate" title="自動回転">
+              <span>◎</span> 自動回転
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Special Events -->
+    <section id="events" class="section section-events">
+      <div class="section-inner">
+        <h2 class="section-title">スペシャルイベント</h2>
+        <p class="section-lead">
+          この日だけの特別な企画をご用意しました。<br>
+          笑いあり、感動ありの魔法の時間をお楽しみください。
+        </p>
+
+        <div class="events-grid">
+          <!-- Event 1 -->
+          <div class="event-card js-tilt">
+            <div class="event-image">
+              <img src="public/student_council_election.png" alt="もしも俺が生徒会長だったら" />
+            </div>
+            <div class="event-content">
+              <h3>もしも俺が生徒会長だったら</h3>
+              <p>
+                「もしも」の世界で繰り広げられる、架空の生徒会長選挙。<br>
+                ユニークで面白い公約を掲げた候補者たちが、熱い演説バトルを繰り広げます。<br>
+                勝敗を決めるのは、会場の皆さまによるリアルタイム投票システム。<br>
+                あなたの清き一票が、不思議の国の未来（？）を変えるかもしれません。
+              </p>
+            </div>
+          </div>
+
+          <!-- Event 2 -->
+          <div class="event-card reverse js-tilt">
+            <div class="event-image">
+              <img src="public/arbitrary_awards.png" alt="勝手に表彰してみた" />
+            </div>
+            <div class="event-content">
+              <h3>勝手に表彰してみた</h3>
+              <p>
+                「将来お金持ちになりそうな人」「無人島でも生き残れそうな人」…<br>
+                そんなユニークな部門で、各クラスから候補者をノミネート。<br>
+                会場での決選投票で、栄えある（勝手な）No.1を決定します。
+              </p>
+            </div>
+          </div>
+
+          <!-- Event 3 -->
+          <div class="event-card js-tilt">
+            <div class="event-image">
+              <img src="public/teacher_performance.png" alt="先生による有志発表" />
+            </div>
+            <div class="event-content">
+              <h3>先生による有志発表</h3>
+              <p>
+                普段は教壇に立つ先生方が、この日だけはエンターテイナーに！？<br>
+                歌、ダンス、楽器演奏、あるいは漫才…？<br>
+                先生方による一夜限りのスペシャルパフォーマンス。<br>
+                普段は見られない意外な一面に、会場は大盛り上がり間違いなし！
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Program -->
+    <section id="program" class="section section-program">
+      <div class="section-inner">
+        <h2 class="section-title">当日のプログラム</h2>
+        <p class="section-lead">
+          当日の大まかな流れをご紹介します。ゲストの皆さま向けに、主なプログラムのみを抜粋しています。
+        </p>
+        <ol class="program-timeline">
+          <li>
+            <span class="time">14:00</span>
+            <div class="program-card js-tilt">
+              <h3>受付スタート &amp; ウェルカムタイム</h3>
+              <p>ロビーにて受付を行います。フォトスポットでの写真撮影など、早めにご来場の方もゆっくりお過ごしいただけます。</p>
+            </div>
+          </li>
+          <li>
+            <span class="time">14:30</span>
+            <div class="program-card js-tilt">
+              <h3>オープニングセレモニー</h3>
+              <p>先生方のご入場、オープニングムービー上映、開会のことばやご挨拶、乾杯を行います。</p>
+            </div>
+          </li>
+          <li>
+            <span class="time">14:45</span>
+            <div class="program-card js-tilt">
+              <h3>お食事 &amp; 歓談タイム</h3>
+              <p>お食事やスイーツを楽しみながら、先生や仲間との歓談をお楽しみください。</p>
+            </div>
+          </li>
+          <li>
+            <span class="time">14:50</span>
+            <div class="program-card js-tilt">
+              <h3>余興・お楽しみプログラム</h3>
+              <p>クイズや合唱、有志による出し物、思い出ムービー上映など、笑顔あふれる時間を予定しています。</p>
+            </div>
+          </li>
+          <li>
+            <span class="time">16:00</span>
+            <div class="program-card js-tilt">
+              <h3>花束・記念品贈呈</h3>
+              <p>先生方へ花束と記念品をお贈りし、一言ずつメッセージをいただきます。</p>
+            </div>
+          </li>
+          <li>
+            <span class="time">16:20</span>
+            <div class="program-card js-tilt">
+              <h3>感謝のことば &amp; クロージング</h3>
+              <p>保護者代表・生徒代表からの感謝のことば、閉会のあいさつで会を締めくくります。</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Meal Photos -->
+    <section id="meal" class="section section-meal">
+      <div class="section-inner">
+        <h2 class="section-title">食事</h2>
+        <p class="section-lead">
+          当日ご用意するお料理やスイーツのイメージです。写真は一部のメニュー例となります。
+        </p>
+        <div class="meal-carousel" aria-label="食事イメージ写真スライド">
+          <div class="meal-track">
+            <!-- Set 1 -->
+            <figure class="meal-item js-tilt">
+              <img src="public/meal-1.jpeg" alt="食事イメージ1" />
+            </figure>
+            <figure class="meal-item js-tilt">
+              <img src="public/meal-2.jpeg" alt="食事イメージ2" />
+            </figure>
+            <figure class="meal-item js-tilt">
+              <img src="public/meal-3.jpeg" alt="食事イメージ4" />
+            </figure>
+            <figure class="meal-item js-tilt">
+              <img src="public/meal-4.jpeg" alt="食事イメージ5" />
+            </figure>
+
+            <!-- Set 2 -->
+            <figure class="meal-item js-tilt">
+              <img src="public/meal-1.jpeg" alt="食事イメージ1" />
+            </figure>
+            <figure class="meal-item js-tilt">
+              <img src="public/meal-2.jpeg" alt="食事イメージ2" />
+            </figure>
+            <figure class="meal-item js-tilt">
+              <img src="public/meal-3.jpeg" alt="食事イメージ4" />
+            </figure>
+            <figure class="meal-item js-tilt">
+              <img src="public/meal-4.jpeg" alt="食事イメージ5" />
+            </figure>
+
+            <!-- Set 3 -->
+            <figure class="meal-item js-tilt">
+              <img src="public/meal-1.jpeg" alt="食事イメージ1" />
+            </figure>
+            <figure class="meal-item js-tilt">
+              <img src="public/meal-2.jpeg" alt="食事イメージ2" />
+            </figure>
+            <figure class="meal-item js-tilt">
+              <img src="public/meal-3.jpeg" alt="食事イメージ4" />
+            </figure>
+            <figure class="meal-item js-tilt">
+              <img src="public/meal-4.jpeg" alt="食事イメージ5" />
+            </figure>
+
+            <!-- Set 4 -->
+            <figure class="meal-item js-tilt">
+              <img src="public/meal-1.jpeg" alt="食事イメージ1" />
+            </figure>
+            <figure class="meal-item js-tilt">
+              <img src="public/meal-2.jpeg" alt="食事イメージ2" />
+            </figure>
+            <figure class="meal-item js-tilt">
+              <img src="public/meal-3.jpeg" alt="食事イメージ4" />
+            </figure>
+            <figure class="meal-item js-tilt">
+              <img src="public/meal-4.jpeg" alt="食事イメージ5" />
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Access -->
+    <section id="access" class="section section-access">
+      <div class="section-inner">
+        <h2 class="section-title">アクセス</h2>
+        <div class="access-layout">
+          <div class="access-info js-tilt">
+            <p class="section-lead">
+              会場：東京プリンスホテル<br />
+              〒105-8560 東京都港区芝公園3-3-1
+            </p>
+            <ul class="access-list">
+              <li><span>最寄駅</span>都営三田線「御成門駅」A1出口 徒歩約1分</li>
+              <li><span>最寄駅</span>都営浅草線・大江戸線「大門駅」A6出口 徒歩約7分</li>
+              <li><span>最寄駅</span>JR線「浜松町駅」北口 徒歩約10分</li>
+            </ul>
+            <p class="access-note">
+              ※最新の交通案内は東京プリンスホテル公式サイトをご確認ください。
+            </p>
+          </div>
+          <div class="access-map-placeholder js-tilt">
+            <!-- Replace with actual map image or iframe -->
+            <img src="public/access-map.jpeg" alt="会場アクセスマップ" class="access-map-image" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p class="footer-title">不思議の国の謝恩会</p>
+      <p class="footer-copyright">&copy; 2026 Alice's Thank You Party</p>
+    </div>
+  </footer>
+
+  <script src="./script.js?v=20241218162806"></script>
+</body>
+
+</html>
