@@ -445,19 +445,20 @@ document.addEventListener("DOMContentLoaded", () => {
     .to(".loading-logo", {
       opacity: 1,
       y: 0,
-      duration: 1.2,
+      duration: 1.5,
       ease: "power3.out",
+      delay: 1.5,
     })
     .to(".loading-bar-progress", {
       width: "100%",
-      duration: 1.5,
+      duration: 3,
       ease: "power2.inOut",
     })
     .to(".loading-screen", {
       opacity: 0,
-      duration: 0.8,
+      duration: 1,
       ease: "power2.inOut",
-      delay: 0.2,
+      delay: 0.5,
       onComplete: () => {
         // Stop fireworks animation
         if (window.stopFireworks) {
@@ -478,14 +479,14 @@ document.addEventListener("DOMContentLoaded", () => {
       },
     });
 
-  // Safety timeout: Hide loading screen after 4 seconds if it hasn't disappeared
+  // Safety timeout: Hide loading screen after 10 seconds if it hasn't disappeared
   setTimeout(() => {
     const loadingScreen = document.querySelector(".loading-screen");
     if (loadingScreen && loadingScreen.style.display !== "none") {
       loadingScreen.style.display = "none";
       startHeroAnimations();
     }
-  }, 4000);
+  }, 10000);
 
   // --- Hero Section Animations ---
   function startHeroAnimations() {
