@@ -853,7 +853,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let initialControlsTarget = controls.target.clone();
 
     loader.load(
-      "public/model-final.glb",
+      "model-final.glb",
       function (gltf) {
         console.log("Model loaded successfully!", gltf);
         model = gltf.scene;
