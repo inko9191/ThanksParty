@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let animationId;
     let isRunning = true;
 
-    // Resize canvas
     function resizeCanvas() {
       fireworksCanvas.width = window.innerWidth;
       fireworksCanvas.height = window.innerHeight;
@@ -23,7 +22,105 @@ document.addEventListener("DOMContentLoaded", () => {
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
 
-    // Firework class
+    // Motif shape coordinate data (normalized -1 to 1)
+    const motifShapes = {
+      rabbit: {
+        points: [
+          // Left ear
+          [-0.15, -1], [-0.2, -0.85], [-0.22, -0.7], [-0.2, -0.55], [-0.15, -0.45],
+          // Right ear
+          [0.15, -1], [0.2, -0.85], [0.22, -0.7], [0.2, -0.55], [0.15, -0.45],
+          // Head
+          [-0.25, -0.35], [-0.3, -0.2], [-0.28, -0.05], [-0.2, 0.05],
+          [0.25, -0.35], [0.3, -0.2], [0.28, -0.05], [0.2, 0.05],
+          [0, -0.4], [-0.1, -0.3], [0.1, -0.3],
+          // Eyes
+          [-0.1, -0.2], [0.1, -0.2],
+          // Body
+          [-0.2, 0.15], [-0.25, 0.3], [-0.22, 0.5], [-0.15, 0.65], [-0.05, 0.7],
+          [0.2, 0.15], [0.25, 0.3], [0.22, 0.5], [0.15, 0.65], [0.05, 0.7],
+          [0, 0.75],
+          // Tail
+          [0.2, 0.55], [0.28, 0.5], [0.25, 0.6],
+          // Feet
+          [-0.18, 0.75], [-0.1, 0.8], [0.1, 0.8], [0.18, 0.75]
+        ],
+        hueBase: 195, hueRange: 30, saturation: 70, lightness: 75
+      },
+      heart: {
+        points: (function () {
+          const pts = [];
+          for (let t = 0; t < Math.PI * 2; t += 0.15) {
+            const x = 16 * Math.pow(Math.sin(t), 3);
+            const y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+            pts.push([x / 17, y / 17]);
+          }
+          return pts;
+        })(),
+        hueBase: 345, hueRange: 25, saturation: 85, lightness: 60
+      },
+      star: {
+        points: (function () {
+          const pts = [];
+          for (let i = 0; i < 10; i++) {
+            const angle = (Math.PI * 2 / 10) * i - Math.PI / 2;
+            const r = i % 2 === 0 ? 1 : 0.4;
+            pts.push([Math.cos(angle) * r, Math.sin(angle) * r]);
+          }
+          for (let i = 0; i < 5; i++) {
+            const angle = (Math.PI * 2 / 5) * i - Math.PI / 2;
+            pts.push([Math.cos(angle) * 0.65, Math.sin(angle) * 0.65]);
+          }
+          return pts;
+        })(),
+        hueBase: 45, hueRange: 20, saturation: 90, lightness: 65
+      },
+      diamond: {
+        points: (function () {
+          const pts = [];
+          const corners = [[0, -1], [0.6, 0], [0, 1], [-0.6, 0]];
+          for (let i = 0; i < corners.length; i++) {
+            const [x1, y1] = corners[i];
+            const [x2, y2] = corners[(i + 1) % corners.length];
+            for (let t = 0; t <= 1; t += 0.12) {
+              pts.push([x1 + (x2 - x1) * t, y1 + (y2 - y1) * t]);
+            }
+          }
+          for (let t = 0.2; t <= 0.8; t += 0.2) {
+            pts.push([0, -1 + 2 * t]);
+          }
+          return pts;
+        })(),
+        hueBase: 260, hueRange: 30, saturation: 80, lightness: 65
+      },
+      teacup: {
+        points: [
+          // Rim
+          [-0.5, -0.4], [-0.35, -0.45], [-0.2, -0.47], [0, -0.48],
+          [0.2, -0.47], [0.35, -0.45], [0.5, -0.4],
+          // Left side
+          [-0.5, -0.3], [-0.52, -0.15], [-0.5, 0], [-0.45, 0.15], [-0.35, 0.3],
+          // Bottom
+          [-0.25, 0.38], [-0.1, 0.42], [0, 0.43], [0.1, 0.42], [0.25, 0.38],
+          // Right side
+          [0.35, 0.3], [0.45, 0.15], [0.5, 0], [0.52, -0.15], [0.5, -0.3],
+          // Handle
+          [0.52, -0.25], [0.62, -0.2], [0.68, -0.1], [0.7, 0.0],
+          [0.68, 0.1], [0.62, 0.18], [0.52, 0.2], [0.48, 0.15],
+          // Saucer
+          [-0.6, 0.5], [-0.4, 0.55], [-0.2, 0.57], [0, 0.58],
+          [0.2, 0.57], [0.4, 0.55], [0.6, 0.5],
+          // Steam
+          [-0.15, -0.55], [-0.1, -0.7], [-0.15, -0.85],
+          [0, -0.55], [0.05, -0.7], [0, -0.85],
+          [0.15, -0.55], [0.1, -0.7], [0.15, -0.85]
+        ],
+        hueBase: 160, hueRange: 30, saturation: 75, lightness: 65
+      }
+    };
+
+    const motifKeys = Object.keys(motifShapes);
+
     class Firework {
       constructor() {
         this.x = Math.random() * fireworksCanvas.width;
@@ -34,8 +131,21 @@ document.addEventListener("DOMContentLoaded", () => {
         this.vx = Math.cos(this.angle) * this.speed;
         this.vy = Math.sin(this.angle) * this.speed;
         this.trail = [];
-        this.hue = Math.random() * 60 + 280; // Purple-pink range (280-340)
         this.exploded = false;
+
+        // 70% motif, 30% normal circle
+        this.isMotif = Math.random() < 0.7;
+        if (this.isMotif) {
+          this.motifKey = motifKeys[Math.floor(Math.random() * motifKeys.length)];
+          const shape = motifShapes[this.motifKey];
+          this.hue = shape.hueBase + (Math.random() - 0.5) * shape.hueRange;
+          this.saturation = shape.saturation;
+          this.lightness = shape.lightness;
+        } else {
+          this.hue = Math.random() * 60 + 280;
+          this.saturation = 80;
+          this.lightness = 70;
+        }
       }
 
       update() {
@@ -44,9 +154,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         this.x += this.vx;
         this.y += this.vy;
-        this.vy += 0.05; // Gravity
+        this.vy += 0.05;
 
-        // Explode when reaching target or slowing down
         if (this.vy >= 0 || this.y <= this.targetY) {
           this.explode();
           this.exploded = true;
@@ -54,81 +163,126 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       explode() {
-        const particleCount = isMobile ? 40 : 80;
-        for (let i = 0; i < particleCount; i++) {
-          const angle = (Math.PI * 2 / particleCount) * i;
-          const speed = 2 + Math.random() * 4;
-          particles.push(new Particle(
-            this.x, this.y,
-            Math.cos(angle) * speed,
-            Math.sin(angle) * speed,
-            this.hue
-          ));
+        if (this.isMotif) {
+          const shape = motifShapes[this.motifKey];
+          const scale = isMobile ? 50 : 80;
+          const extraPerPoint = isMobile ? 1 : 2;
+
+          shape.points.forEach(([px, py]) => {
+            for (let j = 0; j < extraPerPoint; j++) {
+              const tx = px * scale + (Math.random() - 0.5) * 6;
+              const ty = py * scale + (Math.random() - 0.5) * 6;
+              const dist = Math.sqrt(tx * tx + ty * ty);
+              const speed = dist / 15 + Math.random() * 0.5;
+              const angle = Math.atan2(ty, tx);
+              particles.push(new Particle(
+                this.x, this.y,
+                Math.cos(angle) * speed,
+                Math.sin(angle) * speed,
+                this.hue, this.saturation, this.lightness,
+                tx, ty, true
+              ));
+            }
+          });
+        } else {
+          const particleCount = isMobile ? 60 : 100;
+          for (let i = 0; i < particleCount; i++) {
+            const angle = (Math.PI * 2 / particleCount) * i;
+            const speed = 2 + Math.random() * 4;
+            particles.push(new Particle(
+              this.x, this.y,
+              Math.cos(angle) * speed,
+              Math.sin(angle) * speed,
+              this.hue, this.saturation, this.lightness,
+              0, 0, false
+            ));
+          }
         }
       }
 
       draw() {
-        // Draw trail
         for (let i = 0; i < this.trail.length; i++) {
           const point = this.trail[i];
           const alpha = (i / this.trail.length) * 0.6;
           ctx.beginPath();
           ctx.arc(point.x, point.y, 2, 0, Math.PI * 2);
-          ctx.fillStyle = `hsla(${this.hue}, 80%, 70%, ${alpha})`;
+          ctx.fillStyle = `hsla(${this.hue}, ${this.saturation}%, ${this.lightness}%, ${alpha})`;
           ctx.fill();
         }
-
-        // Draw firework head
         ctx.beginPath();
         ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
-        ctx.fillStyle = `hsl(${this.hue}, 80%, 80%)`;
+        ctx.fillStyle = `hsl(${this.hue}, ${this.saturation}%, ${this.lightness + 10}%)`;
         ctx.fill();
       }
     }
 
-    // Particle class
     class Particle {
-      constructor(x, y, vx, vy, hue) {
+      constructor(x, y, vx, vy, hue, sat, light, targetOffX, targetOffY, isShape) {
+        this.originX = x;
+        this.originY = y;
         this.x = x;
         this.y = y;
         this.vx = vx;
         this.vy = vy;
-        this.hue = hue + (Math.random() - 0.5) * 30;
+        this.hue = hue + (Math.random() - 0.5) * 20;
+        this.sat = sat;
+        this.light = light;
         this.alpha = 1;
-        this.decay = 0.015 + Math.random() * 0.01;
-        this.gravity = 0.08;
+        this.isShape = isShape;
+        this.targetOffX = targetOffX;
+        this.targetOffY = targetOffY;
+        this.life = 0;
+
+        if (isShape) {
+          this.decay = 0.008 + Math.random() * 0.005;
+          this.gravity = 0.02;
+        } else {
+          this.decay = 0.015 + Math.random() * 0.01;
+          this.gravity = 0.08;
+        }
       }
 
       update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        this.vy += this.gravity;
-        this.vx *= 0.98;
-        this.vy *= 0.98;
+        this.life++;
+        if (this.isShape && this.life < 25) {
+          const progress = Math.min(this.life / 20, 1);
+          const ease = 1 - Math.pow(1 - progress, 3);
+          this.x = this.originX + this.targetOffX * ease;
+          this.y = this.originY + this.targetOffY * ease;
+        } else {
+          this.x += this.vx;
+          this.y += this.vy;
+          this.vy += this.gravity;
+          this.vx *= 0.98;
+          this.vy *= 0.98;
+        }
         this.alpha -= this.decay;
       }
 
       draw() {
         ctx.beginPath();
-        ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(${this.hue}, 80%, 60%, ${this.alpha})`;
+        ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${this.hue}, ${this.sat}%, ${this.light}%, ${this.alpha})`;
         ctx.fill();
+        if (this.alpha > 0.6) {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, 4, 0, Math.PI * 2);
+          ctx.fillStyle = `hsla(${this.hue}, ${this.sat}%, ${this.light + 20}%, ${this.alpha * 0.3})`;
+          ctx.fill();
+        }
       }
     }
 
-    // Animation loop
     function animate() {
       if (!isRunning) return;
 
       ctx.fillStyle = "rgba(5, 4, 32, 0.2)";
       ctx.fillRect(0, 0, fireworksCanvas.width, fireworksCanvas.height);
 
-      // Launch new fireworks randomly
-      if (Math.random() < (isMobile ? 0.02 : 0.04)) {
+      if (Math.random() < (isMobile ? 0.04 : 0.08)) {
         fireworks.push(new Firework());
       }
 
-      // Update and draw fireworks
       fireworks = fireworks.filter(fw => {
         if (!fw.exploded) {
           fw.update();
@@ -138,7 +292,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return false;
       });
 
-      // Update and draw particles
       particles = particles.filter(p => {
         p.update();
         p.draw();
@@ -148,10 +301,8 @@ document.addEventListener("DOMContentLoaded", () => {
       animationId = requestAnimationFrame(animate);
     }
 
-    // Start fireworks
     animate();
 
-    // Stop fireworks when loading is done
     window.stopFireworks = function () {
       isRunning = false;
       cancelAnimationFrame(animationId);
